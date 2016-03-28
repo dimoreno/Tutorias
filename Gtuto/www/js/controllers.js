@@ -42,7 +42,7 @@ angular.module('starter.controllers', ['ngResource'])//se anade la dependencia n
     };
 }])//Este ServMostrarTuto se crea para mostrar las tutorias creadas. Ademas esta funcion no recibe parametros
 
-.controller('LoginCtrl', function($scope, $state, $ionicPopup, $ionicLoading, ServRol, ServUsuario, $rootScope, $ionicHistory) {
+.controller('LoginCtrl', function($scope, $state, $ionicPopup, $ionicLoading, ServRol, ServUsuario, $rootScope, $ionicHistory, $cordovaSQLite) {
   //INICIO LOADING
   $scope.show = function() {
     $ionicLoading.show({
@@ -62,6 +62,7 @@ angular.module('starter.controllers', ['ngResource'])//se anade la dependencia n
         disableBack: true
     });
     //FIN para bloquear el boton atras
+
     ServRol.servicioRol($scope.data.username).success(function(data){
       $scope.rol=data.rol;
     })
@@ -74,7 +75,15 @@ angular.module('starter.controllers', ['ngResource'])//se anade la dependencia n
         $rootScope.NombreDoc=$rootScope.pNombre.substring(0, 1);//variable para mostrar en perfil de docente
         $rootScope.sNombre=data.persona.segundoNombre;
         $rootScope.pApellido=data.persona.primerApellido;
-        $rootScope.sApellido=data.persona.segundoApellido;  
+        $rootScope.sApellido=data.persona.segundoApellido;
+        //PASO 4 SQLITE BASE DE DATOS
+        var query = "INSERT INTO tutoria (estado, rolUs) VALUES (?,?)";
+        $cordovaSQLite.execute(db,query,['Sesion_Activa',$scope.rol]).then(function(result) {
+          //alert("ID -> " + result.insertId);
+        }, function(error) {
+          //alert('error jj');
+        });
+        //FIN PASO 4 SQLITE BASE DE DATOS  
         $state.go('tabs.perfilDocente');
       } 
       else {
@@ -84,7 +93,15 @@ angular.module('starter.controllers', ['ngResource'])//se anade la dependencia n
           $rootScope.NombreEst=$rootScope.pNombre.substring(0, 1);//variable para mostrar en perfil de estudiante
           $rootScope.sNombre=data.persona.segundoNombre;
           $rootScope.pApellido=data.persona.primerApellido;
-          $rootScope.sApellido=data.persona.segundoApellido;  
+          $rootScope.sApellido=data.persona.segundoApellido; 
+          //PASO 4 SQLITE BASE DE DATOS
+          var query = "INSERT INTO tutoria (estado, rolUs) VALUES (?,?)";
+          $cordovaSQLite.execute(db,query,["Sesion_Activa",$scope.rol]).then(function(result) {
+            //alert("ID -> " + result.insertId);
+          }, function(error) {
+            //alert('error jj');
+          });
+          //FIN PASO 4 SQLITE BASE DE DATOS 
           $state.go('tabsEst.perfilEstudiante');
         }else{
           var alertPopup = $ionicPopup.alert({
@@ -106,7 +123,7 @@ angular.module('starter.controllers', ['ngResource'])//se anade la dependencia n
   };  
   //FIN METODO LOGIN
 })
-.controller('SalirCtrl', function($scope, $state, $ionicPopup,$rootScope,$ionicHistory) {
+.controller('SalirCtrl', function($scope, $state, $ionicPopup,$rootScope,$ionicHistory, $cordovaSQLite) {
 //para bloquear el boton atras
   $ionicHistory.nextViewOptions({
       disableAnimate: true,
@@ -122,6 +139,10 @@ angular.module('starter.controllers', ['ngResource'])//se anade la dependencia n
     confirmPopup.then(function(res) {
       if(res) {
         console.log('You are sure');
+        var query = "DELETE FROM tutoria";
+        $cordovaSQLite.execute(db,query).then(function(result) {
+          //alert("Datos en 0");
+        });
         $state.go('login');
       } else {
         console.log('You are not sure');
@@ -159,7 +180,7 @@ angular.module('starter.controllers', ['ngResource'])//se anade la dependencia n
         $rootScope.obtParalelo.push({nom_coe:$scope.datosComp[i].nom_coe,
                                 paralelo: $scope.datosComp[i].paralelos[j].paralelo});
       }
-    }
+    }                  
     //actualizar lista
     $scope.doRefresh = function() {
       ServCompEdu.servicioCompEdu($scope.cedula).success(function(data){
@@ -225,6 +246,27 @@ angular.module('starter.controllers', ['ngResource'])//se anade la dependencia n
     alert(t+"\n"+u+"\n"+h);
   };
   //EDITAR TUTORIA
+  //mostrar informacion del componente
+  $scope.info = function(m,p,c,d,hi,hf) {
+    var alertPopup  = $ionicPopup.alert({
+      title: m+" "+"["+p+"]",
+      template: '<ion-list>'+
+                '<ion-item>'+
+                '<h3><strong>Créditos:</strong> '+c+'</h3>'+
+                '</ion-item>'+
+                '<ion-item>'+
+                '<h3><strong>Día:</strong> '+d+'</h3>'+
+                '</ion-item>'+
+                '<ion-item>'+
+                '<h3><strong>Hora de Inicio:</strong> '+hi+'</h3>'+
+                '</ion-item>'+
+                '<ion-item>'+
+                '<h3><strong>Hora Fin:</strong>'+hf+'</h3>'+
+                '</ion-item>'+
+                '</ion-list>'
+    });
+  }; 
+  //Fin mostrar informacion del componente 
 }])
 
 .controller('AlumnoCtrl', ['$scope','$state','$rootScope','$ionicPopup','$ionicLoading'
