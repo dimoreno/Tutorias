@@ -17,10 +17,10 @@ angular.module('starter', ['ionic', 'ngCordova', 'starter.controllers'])
       // from snapping when text inputs are focused. Ionic handles this internally for
       // a much nicer keyboard experience.
       cordova.plugins.Keyboard.disableScroll(true);
-
-      db = $cordovaSQLite.openDB({ name: 'tuto.db' });//paso 3 creo  la BD
-      $cordovaSQLite.execute(db,"CREATE TABLE IF NOT EXISTS tutoria (id integer primary key, estado text, rolUs text)");
       //creo la tabla tutoria
+      db = $cordovaSQLite.openDB({ name: 'tuto.db' });//paso 3 creo  la BD
+      $cordovaSQLite.execute(db,"CREATE TABLE IF NOT EXISTS tutoria (id integer primary key, estado text, rolUs text, pNombre text, Inicial text, sNombre text, pApellido text, sApellido text, cedula text)");
+      //fin creo la tabla tutoria
       //comprobar sesion
       var query = "SELECT * FROM tutoria";
       $cordovaSQLite.execute(db,query).then(function(result) {

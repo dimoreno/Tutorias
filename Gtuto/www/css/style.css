@@ -26,8 +26,15 @@
   background: -ms-linear-gradient(top, #415161, #97958d); 
   background: -o-linear-gradient(top, #415161, #97958d);
 }
+.fondo2{
+  background: #eceded no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
 .circulo{
-  background-color: #009688;
+  background-color: #fbbf03;
 }
 a.circulo {
   padding: 15px 10px;
@@ -35,13 +42,14 @@ a.circulo {
   width: 50px;
   border-radius: 50%;
   float: left;
-  color: #fff;
+  color: #303b47;
   font-size: 20px;
   text-decoration: none;
   text-align: center;
 }
 a.circulo:active {
-  background-color: #00695c;
+  background-color: #303b47;
+  color: #fbbf03;
 }
 
 #content { 

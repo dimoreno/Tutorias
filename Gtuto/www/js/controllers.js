@@ -72,37 +72,37 @@ angular.module('starter.controllers', ['ngResource'])//se anade la dependencia n
       if($scope.datos=='true' && $scope.rol=='docente') {//si el token es true ingresa si no popUp de error
         $rootScope.cedula=data.persona.identificacion;
         $rootScope.pNombre=data.persona.primerNombre;
-        $rootScope.NombreDoc=$rootScope.pNombre.substring(0, 1);//variable para mostrar en perfil de docente
+        $rootScope.Inicial=$rootScope.pNombre.substring(0, 1);//variable para mostrar en perfil de docente
         $rootScope.sNombre=data.persona.segundoNombre;
         $rootScope.pApellido=data.persona.primerApellido;
         $rootScope.sApellido=data.persona.segundoApellido;
+        $state.go('tabs.perfilDocente');
         //PASO 4 SQLITE BASE DE DATOS
-        var query = "INSERT INTO tutoria (estado, rolUs) VALUES (?,?)";
-        $cordovaSQLite.execute(db,query,['Sesion_Activa',$scope.rol]).then(function(result) {
-          //alert("ID -> " + result.insertId);
+        var query = "INSERT INTO tutoria (estado, rolUs, pNombre, Inicial, sNombre, pApellido, sApellido, cedula) VALUES (?,?,?,?,?,?,?,?)";
+        $cordovaSQLite.execute(db,query,['Sesion_Activa',$scope.rol,$rootScope.pNombre,$rootScope.Inicial,$rootScope.sNombre,$rootScope.pApellido,$rootScope.sApellido,$rootScope.cedula]).then(function(result) {
+          //alert("Datos ingresados");
         }, function(error) {
           //alert('error jj');
         });
-        //FIN PASO 4 SQLITE BASE DE DATOS  
-        $state.go('tabs.perfilDocente');
+        //FIN PASO 4 SQLITE BASE DE DATOS        
       } 
       else {
         if($scope.datos=='true' && $scope.rol=='estudiante') {//si el token es true ingresa si no popUp de error
           $rootScope.cedula=data.persona.identificacion;//las variables con rootscope tb pueden ser llamadas con scope.cedula x ej.
           $rootScope.pNombre=data.persona.primerNombre;
-          $rootScope.NombreEst=$rootScope.pNombre.substring(0, 1);//variable para mostrar en perfil de estudiante
+          $rootScope.Inicial=$rootScope.pNombre.substring(0, 1);//variable para mostrar en perfil de estudiante
           $rootScope.sNombre=data.persona.segundoNombre;
           $rootScope.pApellido=data.persona.primerApellido;
-          $rootScope.sApellido=data.persona.segundoApellido; 
+          $rootScope.sApellido=data.persona.segundoApellido;
+          $state.go('tabsEst.perfilEstudiante'); 
           //PASO 4 SQLITE BASE DE DATOS
-          var query = "INSERT INTO tutoria (estado, rolUs) VALUES (?,?)";
-          $cordovaSQLite.execute(db,query,["Sesion_Activa",$scope.rol]).then(function(result) {
-            //alert("ID -> " + result.insertId);
+          var query = "INSERT INTO tutoria (estado, rolUs, pNombre, Inicial, sNombre, pApellido, sApellido, cedula) VALUES (?,?,?,?,?,?,?,?)";
+          $cordovaSQLite.execute(db,query,['Sesion_Activa',$scope.rol,$rootScope.pNombre,$rootScope.Inicial,$rootScope.sNombre,$rootScope.pApellido,$rootScope.sApellido,$rootScope.cedula]).then(function(result) {
+            //alert("Datos Ingresados");
           }, function(error) {
             //alert('error jj');
           });
-          //FIN PASO 4 SQLITE BASE DE DATOS 
-          $state.go('tabsEst.perfilEstudiante');
+          //FIN PASO 4 SQLITE BASE DE DATOS          
         }else{
           var alertPopup = $ionicPopup.alert({
             title: 'Usuario o password incorrectos',
@@ -130,6 +130,21 @@ angular.module('starter.controllers', ['ngResource'])//se anade la dependencia n
       disableBack: true
   });
   //FIN para bloquear el boton atras
+  //Sesion Activa
+  if($rootScope.pNombre == null){
+    var query = "SELECT * FROM tutoria";
+    $cordovaSQLite.execute(db,query).then(function(result) {
+      for ( j=0; j < result.rows.length; j++) {  
+        $rootScope.Inicial=result.rows.item(j).Inicial;
+        $rootScope.pNombre=result.rows.item(j).pNombre;
+        $rootScope.sNombre=result.rows.item(j).sNombre;
+        $rootScope.pApellido=result.rows.item(j).pApellido;
+        $rootScope.sApellido=result.rows.item(j).sApellido;
+        $rootScope.cedula=result.rows.item(j).cedula;
+      }
+    });
+  }
+  //Fin Sesion Activa
   //METODO SALIR
   $scope.salir = function() {
     var confirmPopup = $ionicPopup.confirm({
@@ -138,12 +153,11 @@ angular.module('starter.controllers', ['ngResource'])//se anade la dependencia n
     });  
     confirmPopup.then(function(res) {
       if(res) {
-        console.log('You are sure');
+        $state.go('login');
         var query = "DELETE FROM tutoria";
         $cordovaSQLite.execute(db,query).then(function(result) {
           //alert("Datos en 0");
-        });
-        $state.go('login');
+        });        
       } else {
         console.log('You are not sure');
       }
@@ -180,15 +194,7 @@ angular.module('starter.controllers', ['ngResource'])//se anade la dependencia n
         $rootScope.obtParalelo.push({nom_coe:$scope.datosComp[i].nom_coe,
                                 paralelo: $scope.datosComp[i].paralelos[j].paralelo});
       }
-    }                  
-    //actualizar lista
-    $scope.doRefresh = function() {
-      ServCompEdu.servicioCompEdu($scope.cedula).success(function(data){
-        $scope.datosComp=data;
-        $scope.$broadcast('scroll.refreshComplete');        
-      })
-    };
-    //fin actualizar lista
+    }
     //TRAER TUTORIAS CREADAS para ello se llama al MostrarTuto
     MostrarTuto.servicioMostrarTuto().success(function(data){
       $scope.datosTuto=data;
@@ -210,9 +216,7 @@ angular.module('starter.controllers', ['ngResource'])//se anade la dependencia n
     //FIN TRAER TUTORIAS CREADAS
   })
   .error(function(data){
-    var alertPopup = $ionicPopup.alert({
-      title: 'Error al obtener los componentes educativos'
-    });
+    $scope.Mensaje = 'Error al obtener los componentes educativos';
   })
   .finally(function($ionicLoading) { 
     // ocultar ionicloading
@@ -316,9 +320,7 @@ angular.module('starter.controllers', ['ngResource'])//se anade la dependencia n
     //FIN TRAER TUTORIAS CREADAS 
   })
   .error(function(data){
-    var alertPopup = $ionicPopup.alert({
-      title: 'Error al obtener los componentes educativos'
-    });
+    $scope.Mensaje = 'Error al obtener los componentes educativos';
   })
   .finally(function($ionicLoading) { 
     // ocultar ionicloading

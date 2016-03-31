@@ -1,8 +1,6 @@
 <link href="css/style.css" rel="stylesheet">
 <ion-view view-title="Componentes">
   <ion-content>
-    <ion-refresher on-refresh="doRefresh()">                     
-    </ion-refresher>
     <div class="list card">
       <div class="item item-input-inset">
         <label class="item-input-wrapper">
@@ -30,6 +28,12 @@
             </ion-item>
           </div>          
         </div>  
+      </ion-list>
+      <ion-list ng-show="Mensaje">
+        <div class="item item-body">
+          <img class="full-image" src="img/red.png">
+          <p><strong>{{Mensaje}}</strong></p>
+        </div>
       </ion-list>
     </div> 
   </ion-content>
