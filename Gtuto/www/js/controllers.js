@@ -42,24 +42,6 @@ angular.module('starter.controllers', ['ngResource'])//se anade la dependencia n
     };
 }])//Este ServMostrarTuto se crea para mostrar las tutorias creadas. Ademas esta funcion no recibe parametros
 
-.controller('InicioCtrl', ['$scope','$state','$ionicLoading','$cordovaSQLite',function($scope,$state,$ionicLoading,$cordovaSQLite){
-  //INICIO LOADING
-  $scope.show = function() {
-    $ionicLoading.show({
-      template: '<ion-spinner></ion-spinner>'
-    });
-  };
-  $scope.hide = function(){
-        $ionicLoading.hide();
-  };
-  //FIN LOADING
-  var query = "SELECT * FROM tutoria";
-  $cordovaSQLite.execute(db,query).then(function(result) {
-    for ( j=0; j < result.rows.length; j++) {
-    }
-  });
-}])
-
 .controller('LoginCtrl', function($scope, $state, $ionicPopup, $ionicLoading, ServRol, ServUsuario, $rootScope, $ionicHistory, $cordovaSQLite) {
   //INICIO LOADING
   $scope.show = function() {
@@ -174,7 +156,7 @@ angular.module('starter.controllers', ['ngResource'])//se anade la dependencia n
         $state.go('login');
         var query = "DELETE FROM tutoria";
         $cordovaSQLite.execute(db,query).then(function(result) {
-          //alert("Datos en 0");
+          alert("Datos en 0");
         });        
       } else {
         console.log('You are not sure');

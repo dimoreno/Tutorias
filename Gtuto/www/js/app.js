@@ -6,7 +6,7 @@
 var db = null;//paso 1 BD
 angular.module('starter', ['ionic', 'ngCordova', 'starter.controllers'])
 
-.run(function($ionicPlatform, $cordovaSQLite) {//paso 2 agrego cordovaSqlite
+.run(function($ionicPlatform, $cordovaSQLite,$state) {//paso 2 agrego cordovaSqlite
   $ionicPlatform.ready(function() {
     if(window.cordova && window.cordova.plugins.Keyboard) {
       // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -20,7 +20,15 @@ angular.module('starter', ['ionic', 'ngCordova', 'starter.controllers'])
       //creo la tabla tutoria
       db = $cordovaSQLite.openDB({ name: 'tuto.db' });//paso 3 creo  la BD
       $cordovaSQLite.execute(db,"CREATE TABLE IF NOT EXISTS tutoria (id integer primary key, estado text, rolUs text, pNombre text, Inicial text, sNombre text, pApellido text, sApellido text, cedula text)");
-      //fin creo la tabla tutoria      
+      //fin creo la tabla tutoria
+      //comprobar sesion
+      var query = "SELECT * FROM tutoria";
+      $cordovaSQLite.execute(db,query).then(function(result) {
+        for ( j=0; j < result.rows.length; j++) { 
+          alert(result.rows.item(j).estado)          
+        }
+      });
+      //fin comprobar sesion
     }
     if(window.StatusBar) {
       StatusBar.styleDefault();
@@ -33,8 +41,7 @@ angular.module('starter', ['ionic', 'ngCordova', 'starter.controllers'])
     .state('inicio',{
       cache: false,
       url:'/inicio',
-      templateUrl:'templates/inicio.html',
-      controller: 'InicioCtrl'
+      templateUrl:'templates/inicio.html'
     })
     //Login de la APP
     .state('login',{
