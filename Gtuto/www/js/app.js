@@ -20,7 +20,7 @@ angular.module('starter', ['ionic', 'ngCordova', 'starter.controllers'])
       //creo la tabla tutoria
       db = $cordovaSQLite.openDB({ name: 'tuto.db' });//paso 3 creo  la BD
       $cordovaSQLite.execute(db,"CREATE TABLE IF NOT EXISTS tutoria (id integer primary key, estado text, rolUs text, pNombre text, Inicial text, sNombre text, pApellido text, sApellido text, cedula text)");
-      //fin creo la tabla tutoria
+      //fin creo la tabla tutoria      
     }
     if(window.StatusBar) {
       StatusBar.styleDefault();
@@ -30,12 +30,13 @@ angular.module('starter', ['ionic', 'ngCordova', 'starter.controllers'])
 //VISTAS
 .config(function($stateProvider, $urlRouterProvider) {  
   $stateProvider
-    //Login de la APP
     .state('inicio',{
-      url: '/inicio',
-      templateUrl: 'templates/inicio.html',
-      controller: 'inicioCtrl'
+      cache: false,
+      url:'/inicio',
+      templateUrl:'templates/inicio.html',
+      controller: 'InicioCtrl'
     })
+    //Login de la APP
     .state('login',{
       cache: false,
       url:'/login',
