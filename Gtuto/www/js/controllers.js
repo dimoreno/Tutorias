@@ -123,6 +123,20 @@ angular.module('starter.controllers', ['ngResource'])//se anade la dependencia n
   };  
   //FIN METODO LOGIN
 })
+.controller('inicioCtrl', function($scope, $state, $cordovaSQLite) {
+  var query = "SELECT * FROM tutoria";
+  $cordovaSQLite.execute(db,query).then(function(result) {
+    for ( j=0; j < result.rows.length; j++) {  
+      $rootScope.Inicial=result.rows.item(j).Inicial;
+      alert($rootScope.Inicial);
+      $rootScope.pNombre=result.rows.item(j).pNombre;
+      $rootScope.sNombre=result.rows.item(j).sNombre;
+      $rootScope.pApellido=result.rows.item(j).pApellido;
+      $rootScope.sApellido=result.rows.item(j).sApellido;
+      $rootScope.cedula=result.rows.item(j).cedula;
+    }
+  });  
+})
 .controller('SalirCtrl', function($scope, $state, $ionicPopup,$rootScope,$ionicHistory, $cordovaSQLite) {
 //para bloquear el boton atras
   $ionicHistory.nextViewOptions({
@@ -216,7 +230,7 @@ angular.module('starter.controllers', ['ngResource'])//se anade la dependencia n
     //FIN TRAER TUTORIAS CREADAS
   })
   .error(function(data){
-    $scope.Mensaje = 'Error al obtener los componentes educativos';
+    $scope.Mensaje = 'Al parecer existe un error de conexión..!';
   })
   .finally(function($ionicLoading) { 
     // ocultar ionicloading
@@ -254,7 +268,8 @@ angular.module('starter.controllers', ['ngResource'])//se anade la dependencia n
   $scope.info = function(m,p,c,d,hi,hf) {
     var alertPopup  = $ionicPopup.alert({
       title: m+" "+"["+p+"]",
-      template: '<ion-list>'+
+      template: '<img class="full-image" src="img/UTPL.png">'+
+                '<ion-list>'+
                 '<ion-item>'+
                 '<h3><strong>Créditos:</strong> '+c+'</h3>'+
                 '</ion-item>'+
@@ -270,7 +285,12 @@ angular.module('starter.controllers', ['ngResource'])//se anade la dependencia n
                 '</ion-list>'
     });
   }; 
-  //Fin mostrar informacion del componente 
+  //Fin mostrar informacion del componente
+  //RECARGAR PAGINA
+  $scope.RecargarPagina=function(){
+    $state.go($state.current, {}, {reload: true});
+  }
+  //FIN RECARGAR PAGINA 
 }])
 
 .controller('AlumnoCtrl', ['$scope','$state','$rootScope','$ionicPopup','$ionicLoading'
@@ -320,11 +340,16 @@ angular.module('starter.controllers', ['ngResource'])//se anade la dependencia n
     //FIN TRAER TUTORIAS CREADAS 
   })
   .error(function(data){
-    $scope.Mensaje = 'Error al obtener los componentes educativos';
+    $scope.Mensaje = 'Al parecer existe un error de conexión..!';
   })
   .finally(function($ionicLoading) { 
     // ocultar ionicloading
     $scope.hide($ionicLoading);  
   });
   //FIN TRAER COMPONENTES EDUCATIVOS ESTUDIANTE 
+  //RECARGAR PAGINA
+  $scope.RecargarPagina=function(){
+    $state.go($state.current, {}, {reload: true});
+  }
+  //FIN RECARGAR PAGINA
 }]);
